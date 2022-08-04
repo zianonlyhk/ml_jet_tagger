@@ -15,11 +15,15 @@ from tensorflow.keras.utils import plot_model
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import roc_curve, roc_auc_score, plot_roc_curve
 
+from datetime import datetime
+from datetime import date
+from datetime import time
+
 # outputs saved to the current directory
 cwd = os.getcwd()
-# directory to store output images as testing results
+# default directory to store output images as testing results
 img_dir = cwd+'/plots/'
-# directory to store saved models and history data
+# default directory to store saved models and history data
 endpoint_dir = cwd+'/saved_models/'
 
 
@@ -81,7 +85,7 @@ class Model():
                                           callbacks=[earlystopping],
                                           verbose=0)
             # evaluate the W-QCD network performance
-            print('tagging model performance:')
+            print('\ntagging model performance:')
             self.model.evaluate(self.X_val, self.y_val)
             self.pred_y_test = None
         elif "sklearn" in self.model_type:
@@ -95,16 +99,21 @@ class Model():
             raise Exception(
                 "Sorry we only support keras and scikit-learn models...")
 
-    def save_model(self):
+    def save_model(self, dir=endpoint_dir):
         try:
-            Path(endpoint_dir).mkdir()
+            Path(dir).mkdir()
         except FileExistsError:
             pass
-        Path(endpoint_dir+self.name+'.sav').touch()
-        pickle.dump(self, open(endpoint_dir+self.name+'.sav', 'wb'))
+        Path(dir+self.name+'.sav').touch()
+        pickle.dump(self, open(dir+self.name+'.sav', 'wb'))
 
 
-def compare_models(model_list, draw_roc=True, draw_rej_eff=False):
+def compare_models(model_list, draw_roc=True, draw_rej_eff=False, dir=img_dir):
+    now = datetime.now()
+    nowdate = date.today()
+    nowtime = time(now.hour, now.minute)
+    date_and_time = str(nowdate)+"_"+str(nowtime)
+
     # 2 graphs were defined to be plotted on later
     # the ROC curve
     if draw_roc:
@@ -162,16 +171,16 @@ def compare_models(model_list, draw_roc=True, draw_rej_eff=False):
                 "Sorry we only support keras and scikit-learn models...")
     if draw_roc or draw_rej_eff:
         try:
-            Path(img_dir).mkdir()
+            Path(dir).mkdir()
         except FileExistsError:
             pass
     if draw_roc:
         ax_roc.legend()
-        fig_roc.savefig(img_dir + 'roc.png')
+        fig_roc.savefig(dir + date_and_time+'_roc.png')
     if draw_rej_eff:
         ax_rejeff.legend()
-        fig_rejeff.savefig(img_dir + 'rejeff.png')
+        fig_rejeff.savefig(dir + date_and_time+'_rejeff.png')
 
 
-def load_model(name):
-    return pickle.load(open(endpoint_dir+name+'.sav', 'rb'))
+def load_model(name, dir=endpoint_dir):
+    return pickle.load(open(dir+name+'.sav', 'rb'))
