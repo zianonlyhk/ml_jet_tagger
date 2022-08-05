@@ -1,3 +1,4 @@
+import warnings
 import os
 from pathlib import Path
 # for saving and loading the Model class
@@ -18,6 +19,9 @@ from sklearn.metrics import roc_curve, roc_auc_score, plot_roc_curve
 from datetime import datetime
 from datetime import date
 from datetime import time
+
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+warnings.filterwarnings('ignore')
 
 # outputs saved to the current directory
 cwd = os.getcwd()
