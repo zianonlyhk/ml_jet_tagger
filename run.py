@@ -6,7 +6,8 @@ from datetime import date
 from datetime import time
 
 cwd = os.getcwd()
-log_dir = cwd+'/logs/'
+results_dir = cwd+'/results'
+log_dir = results_dir+'/logs/'
 
 now = datetime.now()
 nowdate = date.today()
@@ -15,6 +16,10 @@ date_and_time = str(nowdate)+"_"+str(nowtime)
 
 log_file_addr = log_dir+date_and_time+".txt"
 
+try:
+    Path(results_dir).mkdir()
+except FileExistsError:
+    pass
 try:
     Path(log_dir).mkdir()
 except FileExistsError:
