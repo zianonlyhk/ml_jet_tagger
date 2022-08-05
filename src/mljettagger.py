@@ -21,11 +21,7 @@ from datetime import time
 
 # outputs saved to the current directory
 cwd = os.getcwd()
-results_dir = cwd+'/results'
-# default directory to store output images as testing results
-img_dir = results_dir+'/plots/'
-# default directory to store saved models and history data
-endpoint_dir = results_dir+'/saved_models/'
+results_dir = cwd+'/results/temp'
 
 
 class Model():
@@ -100,20 +96,12 @@ class Model():
             raise Exception(
                 "Sorry we only support keras and scikit-learn models...")
 
-    def save_model(self, dir=endpoint_dir):
-        try:
-            Path(results_dir).mkdir()
-        except FileExistsError:
-            pass
-        try:
-            Path(dir).mkdir()
-        except FileExistsError:
-            pass
+    def save_model(self, dir=results_dir):
         Path(dir+self.name+'.sav').touch()
         pickle.dump(self, open(dir+self.name+'.sav', 'wb'))
 
 
-def compare_models(model_list, draw_roc=True, draw_rej_eff=False, dir=img_dir):
+def compare_models(model_list, draw_roc=True, draw_rej_eff=False, dir=results_dir):
     now = datetime.now()
     nowdate = date.today()
     nowtime = time(now.hour, now.minute)
@@ -187,5 +175,5 @@ def compare_models(model_list, draw_roc=True, draw_rej_eff=False, dir=img_dir):
         fig_rejeff.savefig(dir + date_and_time+'_rejeff.png')
 
 
-def load_model(name, dir=endpoint_dir):
+def load_model(name, dir=results_dir):
     return pickle.load(open(dir+name+'.sav', 'rb'))
