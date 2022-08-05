@@ -28,4 +28,4 @@ Path(log_file_addr).touch()
 
 with open(log_file_addr, "w+") as output:
     subprocess.call(["python", cwd+"/user_interface.py"], stdout=output)
-    subprocess.run(["mv", temp_dir, results_dir+date_and_time])
+    subprocess.run(["mv", temp_dir, results_dir+"/"+date_and_time])
