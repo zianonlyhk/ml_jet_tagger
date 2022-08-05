@@ -21,10 +21,11 @@ from datetime import time
 
 # outputs saved to the current directory
 cwd = os.getcwd()
+results_dir = cwd+'/results'
 # default directory to store output images as testing results
-img_dir = cwd+'/plots/'
+img_dir = results_dir+'/plots/'
 # default directory to store saved models and history data
-endpoint_dir = cwd+'/saved_models/'
+endpoint_dir = results_dir+'/saved_models/'
 
 
 class Model():
@@ -100,6 +101,10 @@ class Model():
                 "Sorry we only support keras and scikit-learn models...")
 
     def save_model(self, dir=endpoint_dir):
+        try:
+            Path(results_dir).mkdir()
+        except FileExistsError:
+            pass
         try:
             Path(dir).mkdir()
         except FileExistsError:
