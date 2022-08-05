@@ -21,7 +21,7 @@ from datetime import time
 
 # outputs saved to the current directory
 cwd = os.getcwd()
-results_dir = cwd+'/results/temp'
+results_dir = cwd+'/results/temp/'
 
 
 class Model():
