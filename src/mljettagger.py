@@ -10,7 +10,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 # importing keras and sklearn as the main modelling tools
 import tensorflow as tf
-from tensorflow import keras
 from keras import callbacks
 from tensorflow.keras.utils import plot_model
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -20,6 +19,7 @@ from datetime import datetime
 from datetime import date
 from datetime import time
 
+# ignore warnings thrown by TensorFlow for a better user interface
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 warnings.filterwarnings('ignore')
 
@@ -105,22 +105,16 @@ class Model():
         pickle.dump(self, open(dir+self.name+'.sav', 'wb'))
 
 
-def compare_models(model_list, draw_roc=True, draw_rej_eff=False, dir=results_dir):
+def compare_models(model_list, dir=results_dir):
     now = datetime.now()
     nowdate = date.today()
     nowtime = time(now.hour, now.minute)
     date_and_time = str(nowdate)+"_"+str(nowtime)
 
-    # 2 graphs were defined to be plotted on later
-    # the ROC curve
-    if draw_roc:
-        fig_roc, ax_roc = plt.subplots(figsize=(7, 4))
-        ax_roc.set_xlim(0, 1)
-        ax_roc.set_ylim(0, 1)
-    # the rejection-efficiency curve
-    if draw_rej_eff:
-        fig_rejeff, ax_rejeff = plt.subplots(figsize=(7, 4))
-        ax_rejeff.set_yscale('log')
+    # an roc graph is defined to be plotted on later
+    fig_roc, ax_roc = plt.subplots(figsize=(7, 4))
+    ax_roc.set_xlim(0, 1)
+    ax_roc.set_ylim(0, 1)
 
     # looping through the 3 tranining results and plot them together for comparison
     for each_model in model_list:
@@ -133,29 +127,16 @@ def compare_models(model_list, draw_roc=True, draw_rej_eff=False, dir=results_di
             # a scikit-learn tool roc_curve was used to obtain information to be plotted
             fpr, tpr, _ = roc_curve(
                 each_model.y_test, each_model.pred_y_test)
-            # used for cutting the low value part of the rejection-efficiency curve
-            len_tfpr = len(tpr)
             # obtaining the area under the curve using a scikit-learn tool
             auc = roc_auc_score(each_model.y_test, each_model.pred_y_test)
 
-            # plot on the 2 graphs defined earlier
-            # on the ROC curve
-            if draw_roc:
-                ax_roc.plot(fpr, tpr, label=(
-                    '%s (AUC = {0:.3f})' % each_model.name).format(auc))
-                ax_roc.set_xlabel('fpr')
-                ax_roc.set_ylabel('tpr')
-                ax_roc.set_title(
-                    'ROC curve of the model(s) over the testing data set')
-
-            # on the rejection-efficiency curve
-            if draw_rej_eff:
-                ax_rejeff.plot(tpr[len_tfpr//100:], 1 /
-                               fpr[len_tfpr//100:], label='%s model' % each_model.name)
-                ax_rejeff.set_xlabel('signal efficiency (tpr)')
-                ax_rejeff.set_ylabel('Background Rejection (1/fpr)')
-                ax_rejeff.set_title(
-                    'Rejection/Efficiency curve of the model(s) over the testing data set')
+            # plot on the roc graph defined earlier
+            ax_roc.plot(fpr, tpr, label=(
+                '%s (AUC = {0:.3f})' % each_model.name).format(auc))
+            ax_roc.set_xlabel('fpr')
+            ax_roc.set_ylabel('tpr')
+            ax_roc.set_title(
+                'ROC curve of the model(s) over the testing data set')
 
         elif "sklearn" in each_model.model_type:
             each_model.pred_y_test = each_model.model.predict(
@@ -166,17 +147,14 @@ def compare_models(model_list, draw_roc=True, draw_rej_eff=False, dir=results_di
         else:
             raise Exception(
                 "Sorry we only support keras and scikit-learn models...")
-    if draw_roc or draw_rej_eff:
-        try:
-            Path(dir).mkdir()
-        except FileExistsError:
-            pass
-    if draw_roc:
-        ax_roc.legend()
-        fig_roc.savefig(dir + date_and_time+'_roc.png')
-    if draw_rej_eff:
-        ax_rejeff.legend()
-        fig_rejeff.savefig(dir + date_and_time+'_rejeff.png')
+
+    try:
+        Path(dir).mkdir()
+    except FileExistsError:
+        pass
+
+    ax_roc.legend()
+    fig_roc.savefig(dir + date_and_time+'_roc.png')
 
 
 def load_model(name, dir=results_dir):
