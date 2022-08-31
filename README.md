@@ -17,7 +17,7 @@ a tool for developing and testing machine learning models performing binary clas
 
 ## About <a name = "about"></a>
 
-This tool was made in a summer internship project at University College London Department of Physics and Astronomy, aiming at building a machine learning algorithm to efficiently recognise electron pair production signal from its background jet noise in the ATLAS experiment.
+This tool was made in a summer internship project at University College London Department of Physics and Astronomy, aiming at building a machine learning algorithm to efficiently recognise electron pair production signals from their background jet noises in the ATLAS experiment.
 
 Undergraduate students with limited experience on command-line interface (CLI) might find this tool particularly useful, as only editting text and running Python scripts are required. GUI development on university computing cluster can be then achieved by using the SSH feature in modern IDEs.
 
@@ -29,7 +29,11 @@ It is more ideal to train machine learning network on GPU, which is widely avail
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 ```
 
-If there is available GPU, it will print out an non-zero output.
+If there is available GPU for TensorFlow to pick up, it will print out an non-zero output, such as:
+
+```
+Num GPUs Available: 1
+```
 
 ### Prerequisites
 
@@ -54,21 +58,31 @@ And change to the directory:
 cd ml_jet_tagger
 ```
 
-All of the outputs of the code will be stored under the `ml_jet_tagger` directory. User can move the folder to a suitable address without worrying any path issue.
+All of the outputs of the code will be stored under the `ml_jet_tagger` directory, making the codes very portable. Users can move the folder to a suitable address without worrying any path issue.
 
 ## Usage <a name = "usage"></a>
 
-To use this code, user **must** first edit the `user_interface.py` file to specify the directory storing all of the input image set. There can be potential error with user working under Windows operating system as a different slash is used in defining address. It is advised to test this code on a cloud machine with GPU capability such as Google Colab.
+To use this code, users **must** first edit the `user_interface.py` file to specify the directory storing all of the input image set. There can be potential error with users working under Windows operating system as a different slash is used in defining address. It is advised to test this code on a cloud machine with GPU capability such as Google Colab.
 
 ### Editting the "user_interface.py" file
 
-User might use a more friendly and modern terminal text editor, `nano` to work on the interface configuration file:
+Users might use a more friendly and modern terminal text editor, `nano` to work on the interface configuration file:
 
 ```
 nano ./user_interface.py
 ```
 
 Press `Control + S` to save and `Control + X` to exit the programme after editting.
+
+### Preparing raw data for training
+
+Users should prepare 2 files, input data `X` and its label `y`, in ".npy" format that specifies they are Numpy array instances. These 2 files should be put under the same directory `DATA_DIR` and the directory must be specified in "user_interface.py".
+
+The 2 Numpy arrays must satisfy:
+1. `len(X) = len(y)`
+2. Every entry in `X` must share the same dimension and array structure with any other member
+3. If the input data consists of images, `X.shape()` must yield: `(len(X), y_resolution, x_resolution, 1)` if the images are monochromatic or `(len(X), y_resolution, x_resolution, 3)` if they are images with RGB colour.
+4. The 1D array `y` consists of only `1`, which specify signal, and `0` which specify background.
 
 ### Running the code
 
