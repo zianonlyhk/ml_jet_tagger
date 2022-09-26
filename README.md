@@ -19,7 +19,7 @@ a tool for developing and testing machine learning models performing binary clas
 
 This tool was made in a summer internship project at University College London Department of Physics and Astronomy, aiming at building a machine learning algorithm to efficiently recognise electron pair production signals from their background jet noises in the ATLAS experiment.
 
-Undergraduate students with limited experience on command-line interface (CLI) might find this tool particularly useful, as only editting text and running Python scripts are required. GUI development on university computing cluster can be then achieved by using the SSH feature in modern IDEs.
+Undergraduate students with limited experience on command-line interface (CLI) might find this tool particularly useful, as only editing text and running Python scripts are required. GUI development on university computing cluster can be then achieved by using the SSH feature in modern IDEs.
 
 ## Getting Started <a name = "getting_started"></a>
 
